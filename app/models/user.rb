@@ -38,10 +38,8 @@ class User < ApplicationRecord
   ACTIVE_DURATION = 14.days
 
   devise :registerable, :recoverable,
-         :rememberable, :trackable, :validatable, :confirmable,
-         :two_factor_authenticatable, :two_factor_backupable,
-         otp_secret_encryption_key: ENV['OTP_SECRET'],
-         otp_number_of_backup_codes: 10
+         :rememberable, :trackable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   belongs_to :account, inverse_of: :user, required: true
   accepts_nested_attributes_for :account

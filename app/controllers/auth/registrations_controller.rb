@@ -7,6 +7,29 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :configure_sign_up_params, only: [:create]
   before_action :set_sessions, only: [:edit, :update]
 
+  def new
+    if session['devise.auth_data']
+      super
+    else
+      redirect_to about_path
+    end
+  end
+
+  def create
+    ActiveRecord::Base.transaction do
+      super do
+        if resource.id
+          ::Rutans::AuthProvider.create!(
+            name: session['devise.auth_data']['name'],
+            uid: session['devise.auth_data']['uid'],
+            user_id: resource.id
+          )
+          session['devise.auth_data'] = nil
+        end
+      end
+    end
+  end
+
   def destroy
     not_found
   end
@@ -15,6 +38,8 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def build_resource(hash = nil)
     super(hash)
+    @item_rutan = resource
+    resource.email = session['devise.auth_data']['email']
     resource.locale = I18n.locale
     resource.build_account if resource.account.nil?
   end

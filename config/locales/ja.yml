@@ -257,6 +257,9 @@ ja:
     resend_confirmation: 確認メールを再送する
     reset_password: パスワードを再発行
     set_new_password: 新しいパスワード
+    rutan_register_or_login: ログイン / 登録
+    rutan_login_with_google: Googleアカウントでログイン
+    rutan_email: メールアドレス（非公開）
   authorize_follow:
     error: 残念ながら、リモートアカウント情報の取得中にエラーが発生しました。
     follow: フォロー
@@ -435,6 +438,10 @@ ja:
     revoke: 削除
     revoke_success: セッションを削除しました
     title: セッション
+    rutan_account_info: アカウント情報
+    rutan_description: あなたのMastodonアカウントの登録情報です。
+    rutan_email: 登録メールアドレス
+    rutan_registered_at: 登録日
   settings:
     authorized_apps: 認証済みアプリ
     back: Mastodon に戻る

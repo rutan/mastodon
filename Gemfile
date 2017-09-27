@@ -116,3 +116,7 @@ group :production do
   gem 'lograge', '~> 0.5'
   gem 'redis-rails', '~> 5.0'
 end
+
+# m.rutan.info
+gem 'omniauth'
+gem 'omniauth-google-oauth2'

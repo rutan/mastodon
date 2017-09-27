@@ -5,6 +5,14 @@ class Auth::PasswordsController < Devise::PasswordsController
 
   layout 'auth'
 
+  def create
+    raise ActiveRecord::RecordNotFound
+  end
+
+  def update
+    raise ActiveRecord::RecordNotFound
+  end
+
   private
 
   def check_validity_of_reset_password_token

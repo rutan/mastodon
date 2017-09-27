@@ -32,8 +32,8 @@ end
 
 Devise.setup do |config|
   config.warden do |manager|
-    manager.default_strategies(scope: :user).unshift :two_factor_authenticatable
-    manager.default_strategies(scope: :user).unshift :two_factor_backupable
+    # manager.default_strategies(scope: :user).unshift :two_factor_authenticatable
+    # manager.default_strategies(scope: :user).unshift :two_factor_backupable
   end
 
   # The secret key used by Devise. Devise uses this key to generate
@@ -276,6 +276,10 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
+  config.omniauth :google_oauth2, ENV['RUTAN_OMNIAUTH_GOOGLE_CLIENT'], ENV['RUTAN_OMNIAUTH_GOOGLE_SECRET'],
+                  scope: 'email, profile',
+                  prompt: 'select_account'
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
@@ -297,5 +301,5 @@ Devise.setup do |config|
   #
   # When using OmniAuth, Devise cannot automatically set OmniAuth path,
   # so you need to do it manually. For the users scope, it would be:
-  # config.omniauth_path_prefix = '/my_engine/users/auth'
+  config.omniauth_path_prefix = '/auth/providers'
 end

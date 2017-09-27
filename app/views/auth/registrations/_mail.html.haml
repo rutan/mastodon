@@ -1,0 +1,16 @@
+%h6= t 'sessions.rutan_account_info'
+%p.muted-hint= t 'sessions.rutan_description'
+
+.table-wrapper
+  %table.table.inline-table
+    %thead
+      %tr
+        %th= t 'sessions.rutan_email'
+        %th= t 'sessions.rutan_registered_at'
+        %td
+    %tbody
+      %tr
+        %td
+          %samp= current_user.email
+        %td
+          %samp= current_user.created_at

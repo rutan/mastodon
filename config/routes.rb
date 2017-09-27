@@ -23,11 +23,15 @@ Rails.application.routes.draw do
   get 'intent', to: 'intents#show'
 
   devise_for :users, path: 'auth', controllers: {
-    sessions:           'auth/sessions',
     registrations:      'auth/registrations',
     passwords:          'auth/passwords',
-    confirmations:      'auth/confirmations',
+    omniauth_callbacks: 'auth/omniauth_callbacks'
   }
+
+  namespace :rutans, path: 'auth', as: nil do
+    get 'sign_in' => 'sessions#new', as: :new_user_session
+    delete 'sign_out' => 'sessions#destroy', as: :destroy_user_session
+  end
 
   get '/users/:username', to: redirect('/@%{username}'), constraints: lambda { |req| req.format.nil? || req.format.html? }
 
@@ -76,11 +80,11 @@ Rails.application.routes.draw do
       resources :mutes, only: :index, controller: :muted_accounts
     end
 
-    resource :two_factor_authentication, only: [:show, :create, :destroy]
-    namespace :two_factor_authentication do
-      resources :recovery_codes, only: [:create]
-      resource :confirmation, only: [:new, :create]
-    end
+    # resource :two_factor_authentication, only: [:show, :create, :destroy]
+    # namespace :two_factor_authentication do
+    #  resources :recovery_codes, only: [:create]
+    #  resource :confirmation, only: [:new, :create]
+    # end
 
     resource :follower_domains, only: [:show, :update]
 
@@ -256,8 +260,10 @@ Rails.application.routes.draw do
 
   root 'home#index'
 
-  match '*unmatched_route',
-        via: :all,
-        to: 'application#raise_not_found',
-        format: false
+  if Rails.env.production?
+    match '*unmatched_route',
+          via: :all,
+          to: 'application#raise_not_found',
+          format: false
+  end
 end
