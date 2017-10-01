@@ -13,5 +13,9 @@ module Rutans
       flash.delete(:notice)
       redirect_to '/'
     end
+
+    def store_current_location
+      # nothing to do
+    end
   end
 end
