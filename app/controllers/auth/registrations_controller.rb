@@ -38,7 +38,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def build_resource(hash = nil)
     super(hash)
-    @item_rutan = resource
     resource.email = session['devise.auth_data']['email']
     resource.locale = I18n.locale
     resource.build_account if resource.account.nil?
@@ -46,7 +45,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up) do |u|
-      u.permit({ account_attributes: [:username] }, :email, :password, :password_confirmation)
+      u.permit(account_attributes: [:username])
     end
   end
 
