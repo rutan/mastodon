@@ -13,7 +13,7 @@ class Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       session['devise.auth_data'] = {
         name: auth['provider'],
         uid: auth['uid'],
-        email: auth['info']['email']
+        email: auth['info']['email'],
       }
       redirect_to new_user_registration_path
     end
