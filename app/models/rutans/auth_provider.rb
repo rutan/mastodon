@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # == Schema Information
 #
 # Table name: rutans_auth_providers
@@ -19,7 +20,7 @@ module Rutans
               presence: true
 
     def self.from_omniauth(auth)
-      auth = self.find_by(name: auth['provider'], uid: auth['uid'])
+      auth = find_by(name: auth['provider'], uid: auth['uid'])
       return auth if auth
 
       ActiveRecord::Base.transaction do
@@ -27,7 +28,7 @@ module Rutans
           email: auth['info']['email']
         )
 
-        self.create!(
+        create!(
           name: auth['provider'],
           uid: auth['uid'],
           user: user
