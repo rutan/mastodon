@@ -30,6 +30,7 @@ Rails.application.routes.draw do
 
   namespace :rutans, path: 'auth', as: nil do
     get 'sign_in' => 'sessions#new', as: :new_user_session
+    get 'sign_in' => 'sessions#new', as: :session
     delete 'sign_out' => 'sessions#destroy', as: :destroy_user_session
   end
 
@@ -279,7 +280,7 @@ Rails.application.routes.draw do
 
   root 'home#index'
 
-  if Rails.env.production?
+  unless Rails.env.development?
     match '*unmatched_route',
           via: :all,
           to: 'application#raise_not_found',

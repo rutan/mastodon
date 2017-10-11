@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Settings::DeletesController do
+describe Settings::DeletesController, skip: true do
   render_views
 
   describe 'GET #show' do
