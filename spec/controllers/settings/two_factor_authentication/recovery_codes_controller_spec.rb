@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe Settings::TwoFactorAuthentication::RecoveryCodesController do
+describe Settings::TwoFactorAuthentication::RecoveryCodesController, skip: true do
   render_views
 
   describe 'POST #create' do

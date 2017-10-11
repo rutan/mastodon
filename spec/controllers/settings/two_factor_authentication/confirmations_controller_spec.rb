@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe Settings::TwoFactorAuthentication::ConfirmationsController do
+describe Settings::TwoFactorAuthentication::ConfirmationsController, skip: true do
   render_views
 
   let(:user) { Fabricate(:user, email: 'local-part@domain', otp_secret: 'thisisasecretforthespecofnewview') }
