@@ -46,4 +46,8 @@ module ApplicationHelper
   def opengraph(property, content)
     tag(:meta, content: content, property: property)
   end
+
+  def instance_presenter
+    @instance_presenter ||= InstancePresenter.new
+  end
 end
