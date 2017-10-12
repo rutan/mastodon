@@ -1,0 +1,17 @@
+.service-mini-logo {
+  margin: 20px auto;
+
+  a {
+    display: inline;
+    margin: 0 auto;
+
+    &:hover {
+      opacity: .7;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 40px;
+  }
+}

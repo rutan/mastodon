@@ -12,6 +12,8 @@
   = opengraph 'og:type', 'profile'
   = render 'og', account: @account, url: short_account_url(@account, only_path: false)
 
+= render partial: 'shared/rutan/mini_logo'
+
 - if show_landing_strip?
   = render partial: 'shared/landing_strip', locals: { account: @account }
 
