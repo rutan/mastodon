@@ -1,2 +1,0 @@
-module Rutans::SessionsHelper
-end

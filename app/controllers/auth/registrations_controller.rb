@@ -6,6 +6,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :check_enabled_registrations, only: [:new, :create]
   before_action :configure_sign_up_params, only: [:create]
   before_action :set_sessions, only: [:edit, :update]
+  before_action :set_instance_presenter, only: [:new, :update]
 
   def new
     if session['devise.auth_data']
@@ -38,7 +39,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def build_resource(hash = nil)
     super(hash)
-    @item_rutan = resource
     resource.email = session['devise.auth_data']['email']
     resource.locale = I18n.locale
     resource.build_account if resource.account.nil?
@@ -46,7 +46,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up) do |u|
-      u.permit({ account_attributes: [:username] }, :email, :password, :password_confirmation)
+      u.permit(account_attributes: [:username])
     end
   end
 
@@ -63,6 +63,10 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   private
+
+  def set_instance_presenter
+    @instance_presenter = InstancePresenter.new
+  end
 
   def determine_layout
     %w(edit update).include?(action_name) ? 'admin' : 'auth'

@@ -46,6 +46,7 @@ class User < ApplicationRecord
 
   has_many :applications, class_name: 'Doorkeeper::Application', as: :owner
 
+  validates :email, presence: true, uniqueness: true, format: { with: /\A.+@.+\z/ }, if: :email_changed?
   validates :locale, inclusion: I18n.available_locales.map(&:to_s), if: :locale?
   validates_with BlacklistedEmailValidator, if: :email_changed?
 
@@ -106,6 +107,10 @@ class User < ApplicationRecord
 
   def setting_noindex
     settings.noindex
+  end
+
+  def setting_theme
+    settings.theme
   end
 
   def token_for_app(a)
