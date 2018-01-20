@@ -41,8 +41,7 @@ class User < ApplicationRecord
 
   ACTIVE_DURATION = 14.days
 
-  devise :registerable, :recoverable,
-         :rememberable, :trackable,
+  devise :registerable, :recoverable, :rememberable, :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   belongs_to :account, inverse_of: :user, required: true
@@ -121,9 +120,19 @@ class User < ApplicationRecord
     update!(disabled: false)
   end
 
+  def confirm
+    new_user = !confirmed?
+
+    super
+    update_statistics! if new_user
+  end
+
   def confirm!
+    new_user = !confirmed?
+
     skip_confirmation!
     save!
+    update_statistics! if new_user
   end
 
   def promote!
@@ -200,5 +209,10 @@ class User < ApplicationRecord
 
   def sanitize_languages
     filtered_languages.reject!(&:blank?)
+  end
+
+  def update_statistics!
+    BootstrapTimelineWorker.perform_async(account_id)
+    ActivityTracker.increment('activity:accounts:local')
   end
 end
