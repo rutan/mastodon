@@ -367,6 +367,7 @@ en:
     forgot_password: Forgot your password?
     invalid_reset_password_token: Password reset token is invalid or expired. Please request a new one.
     login: Log in
+    login_and_register: Log in / Logout
     logout: Logout
     migrate_account: Move to a different account
     migrate_account_html: If you wish to redirect this account to a different one, you can <a href="%{path}">configure it here</a>.
@@ -374,6 +375,7 @@ en:
     or_log_in_with: Or log in with
     providers:
       cas: CAS
+      google_oauth2: Log in with Google Account
       saml: SAML
     register: Sign up
     register_elsewhere: Sign up on another server

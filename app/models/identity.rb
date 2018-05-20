@@ -19,4 +19,9 @@ class Identity < ApplicationRecord
   def self.find_for_oauth(auth)
     find_or_create_by(uid: auth.uid, provider: auth.provider)
   end
+
+  def self.find_for_oauth_without_create(auth)
+    auth.uid = (auth.uid[0][:uid] || auth.uid[0][:user]) if auth.uid.is_a? Hashie::Array
+    find_by(uid: auth.uid, provider: auth.provider)
+  end
 end

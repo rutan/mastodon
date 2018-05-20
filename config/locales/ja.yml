@@ -367,6 +367,7 @@ ja:
     forgot_password: パスワードをお忘れですか？
     invalid_reset_password_token: パスワードリセットトークンが正しくないか期限切れです。もう一度リクエストしてください。
     login: ログイン
+    login_and_register: ログイン / 登録
     logout: ログアウト
     migrate_account: 別のアカウントに引っ越す
     migrate_account_html: 引っ越し先を明記したい場合は<a href="%{path}">こちら</a>で設定できます。
@@ -374,6 +375,7 @@ ja:
     or_log_in_with: または次のサービスでログイン
     providers:
       cas: CAS
+      google_oauth2: Googleアカウントでログイン
       saml: SAML
     register: 登録する
     register_elsewhere: 他のインスタンスで新規登録

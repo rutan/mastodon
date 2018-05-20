@@ -254,16 +254,22 @@ class User < ApplicationRecord
   end
 
   def password_required?
+    return false # m.rutan.info
+
     return false if Devise.pam_authentication || Devise.ldap_authentication
     super
   end
 
   def send_reset_password_instructions
+    return false # m.rutan.info
+
     return false if encrypted_password.blank? && (Devise.pam_authentication || Devise.ldap_authentication)
     super
   end
 
   def reset_password!(new_password, new_password_confirmation)
+    return false # m.rutan.info
+
     return false if encrypted_password.blank? && (Devise.pam_authentication || Devise.ldap_authentication)
     super
   end

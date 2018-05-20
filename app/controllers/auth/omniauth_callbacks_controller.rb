@@ -7,7 +7,12 @@ class Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     provider_id = provider.to_s.chomp '_oauth2'
 
     define_method provider do
-      @user = User.find_for_oauth(request.env['omniauth.auth'], current_user)
+      if current_user
+        @user = User.find_for_oauth(request.env['omniauth.auth'], current_user)
+      else
+        identity = Identity.find_for_oauth_without_create(request.env['omniauth.auth'])
+        @user = identity.try(:user) || User.new
+      end
 
       if @user.persisted?
         sign_in_and_redirect @user, event: :authentication

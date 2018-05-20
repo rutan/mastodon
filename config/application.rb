@@ -75,7 +75,7 @@ module Mastodon
       :'zh-TW',
     ]
 
-    config.i18n.default_locale = ENV['DEFAULT_LOCALE']&.to_sym
+    config.i18n.default_locale = ENV['DEFAULT_LOCALE']&.to_sym unless Rails.env.test?
     unless config.i18n.available_locales.include?(config.i18n.default_locale)
       config.i18n.default_locale = :en
     end

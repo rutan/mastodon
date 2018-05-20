@@ -77,6 +77,8 @@ class ApplicationController < ActionController::Base
   end
 
   def use_seamless_external_login?
+    return true # m.rutan.info
+
     Devise.pam_authentication || Devise.ldap_authentication
   end
 

@@ -267,9 +267,9 @@ ActiveRecord::Schema.define(version: 20180304013859) do
   create_table "mutes", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "hide_notifications", default: true, null: false
     t.bigint "account_id", null: false
     t.bigint "target_account_id", null: false
-    t.boolean "hide_notifications", default: true, null: false
     t.index ["account_id", "target_account_id"], name: "index_mutes_on_account_id_and_target_account_id", unique: true
   end
 
@@ -366,6 +366,16 @@ ActiveRecord::Schema.define(version: 20180304013859) do
     t.bigint "target_account_id", null: false
     t.index ["account_id"], name: "index_reports_on_account_id"
     t.index ["target_account_id"], name: "index_reports_on_target_account_id"
+  end
+
+  create_table "rutans_auth_providers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "name", limit: 64, null: false
+    t.string "uid", limit: 128, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "uid"], name: "index_rutans_auth_providers_on_name_and_uid", unique: true
+    t.index ["user_id"], name: "index_rutans_auth_providers_on_user_id"
   end
 
   create_table "session_activations", force: :cascade do |t|

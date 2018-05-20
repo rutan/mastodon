@@ -85,11 +85,11 @@ Rails.application.routes.draw do
       resources :mutes, only: :index, controller: :muted_accounts
     end
 
-    resource :two_factor_authentication, only: [:show, :create, :destroy]
-    namespace :two_factor_authentication do
-      resources :recovery_codes, only: [:create]
-      resource :confirmation, only: [:new, :create]
-    end
+    # resource :two_factor_authentication, only: [:show, :create, :destroy]
+    # namespace :two_factor_authentication do
+    #   resources :recovery_codes, only: [:create]
+    #   resource :confirmation, only: [:new, :create]
+    # end
 
     resource :follower_domains, only: [:show, :update]
 
@@ -162,7 +162,7 @@ Rails.application.routes.draw do
     end
 
     resources :users, only: [] do
-      resource :two_factor_authentication, only: [:destroy]
+      # resource :two_factor_authentication, only: [:destroy]
     end
 
     resources :custom_emojis, only: [:index, :new, :create, :update, :destroy] do
