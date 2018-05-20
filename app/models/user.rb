@@ -41,8 +41,14 @@ class User < ApplicationRecord
 
   ACTIVE_DURATION = 14.days
 
-  devise :registerable, :recoverable, :rememberable, :trackable,
-         :omniauthable, omniauth_providers: [:google_oauth2]
+  devise :two_factor_authenticatable,
+         otp_secret_encryption_key: ENV['OTP_SECRET']
+
+  devise :two_factor_backupable,
+         otp_number_of_backup_codes: 10
+
+  devise :registerable, :recoverable, :rememberable, :trackable, :validatable,
+         :confirmable
 
   belongs_to :account, inverse_of: :user
   belongs_to :invite, counter_cache: :uses, optional: true
@@ -50,7 +56,6 @@ class User < ApplicationRecord
 
   has_many :applications, class_name: 'Doorkeeper::Application', as: :owner
 
-  validates :email, presence: true, uniqueness: true, format: { with: /\A.+@.+\z/ }, if: :email_changed?
   validates :locale, inclusion: I18n.available_locales.map(&:to_s), if: :locale?
   validates_with BlacklistedEmailValidator, if: :email_changed?
 

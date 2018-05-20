@@ -8,29 +8,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :set_sessions, only: [:edit, :update]
   before_action :set_instance_presenter, only: [:new, :create, :update]
 
-  def new
-    if session['devise.auth_data']
-      super
-    else
-      redirect_to about_path
-    end
-  end
-
-  def create
-    ActiveRecord::Base.transaction do
-      super do
-        if resource.id
-          ::Rutans::AuthProvider.create!(
-            name: session['devise.auth_data']['name'],
-            uid: session['devise.auth_data']['uid'],
-            user_id: resource.id
-          )
-          session['devise.auth_data'] = nil
-        end
-      end
-    end
-  end
-
   def destroy
     not_found
   end
@@ -39,14 +16,16 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def build_resource(hash = nil)
     super(hash)
-    resource.email = session['devise.auth_data']['email']
-    resource.locale = I18n.locale
+
+    resource.locale      = I18n.locale
+    resource.invite_code = params[:invite_code] if resource.invite_code.blank?
+
     resource.build_account if resource.account.nil?
   end
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up) do |u|
-      u.permit(account_attributes: [:username])
+      u.permit({ account_attributes: [:username] }, :email, :password, :password_confirmation, :invite_code)
     end
   end
 
