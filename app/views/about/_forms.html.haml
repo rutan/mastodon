@@ -1,0 +1,18 @@
+-#- if @instance_presenter.open_registrations
+-#  = render 'registration'
+-#- else
+-#  = link_to t('auth.register_elsewhere'), 'https://joinmastodon.org', class: 'button button-primary'
+-#
+-#  .closed-registrations-message
+-#    - if @instance_presenter.closed_registrations_message.blank?
+-#      %p= t('about.closed_registrations')
+-#    - else
+-#      = @instance_presenter.closed_registrations_message.html_safe
+-#
+-#.separator-or
+-#  %span= t('auth.or')
+-#
+
+%p.login-and-register-message
+  = t('auth.providers.google_oauth2')
+= link_to t('auth.login_and_register'), '/auth/providers/google_oauth2', class: 'button button-alternative-2 webapp-btn'

@@ -1,41 +1,38 @@
 # frozen_string_literal: true
 
 class Auth::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  def google_oauth2
-    auth = request.env['omniauth.auth']
-    @auth_provider = Rutans::AuthProvider.find_by(name: auth['provider'], uid: auth['uid'])
+  skip_before_action :verify_authenticity_token
 
-    if @auth_provider.present?
-      user = @auth_provider.user
-      sign_in user
-      redirect_to after_sign_in_path_for(user)
-    else
-      session['devise.auth_data'] = {
-        name: auth['provider'],
-        uid: auth['uid'],
-        email: auth['info']['email'],
-      }
-      redirect_to new_user_registration_path
+  def self.provides_callback_for(provider)
+    provider_id = provider.to_s.chomp '_oauth2'
+
+    define_method provider do
+      if current_user
+        @user = User.find_for_oauth(request.env['omniauth.auth'], current_user)
+      else
+        identity = Identity.find_for_oauth_without_create(request.env['omniauth.auth'])
+        @user = identity.try(:user) || User.new
+      end
+
+      if @user.persisted?
+        sign_in_and_redirect @user, event: :authentication
+        set_flash_message(:notice, :success, kind: provider_id.capitalize) if is_navigational_format?
+      else
+        session["devise.#{provider}_data"] = request.env['omniauth.auth']
+        redirect_to new_user_registration_url
+      end
     end
+  end
+
+  Devise.omniauth_configs.each_key do |provider|
+    provides_callback_for provider
   end
 
   def after_sign_in_path_for(resource)
-    last_url = stored_location_for(:user)
-
-    if home_paths(resource).include?(last_url)
+    if resource.email_verified?
       root_path
     else
-      last_url || root_path
+      finish_signup_path
     end
-  end
-
-  private
-
-  def home_paths(resource)
-    paths = [about_path]
-    if single_user_mode? && resource.is_a?(User)
-      paths << short_account_path(username: resource.account)
-    end
-    paths
   end
 end

@@ -13,12 +13,19 @@
       .append
         = "@#{site_hostname}"
 
-  .input-with-append
-    = t('auth.rutan_email')
-    = ' : '
-    = resource.email
+  - if !session['devise.google_oauth2_data']
+    = f.input :email, placeholder: t('simple_form.labels.defaults.email'), required: true, input_html: { 'aria-label' => t('simple_form.labels.defaults.email'), :autocomplete => 'off' }
+    = f.input :password, placeholder: t('simple_form.labels.defaults.password'), required: true, input_html: { 'aria-label' => t('simple_form.labels.defaults.password'), :autocomplete => 'off' }
+    = f.input :password_confirmation, placeholder: t('simple_form.labels.defaults.confirm_password'), required: true, input_html: { 'aria-label' => t('simple_form.labels.defaults.confirm_password'), :autocomplete => 'off' }
+  - else
+    .input.with_label
+      .label_input
+        = t('simple_form.labels.defaults.email')
+      %p{style: 'padding: 10px 0; font-size: 120%;'}
+        = session['devise.google_oauth2_data']['info']['email']
 
   .actions
     = f.button :button, t('auth.register'), type: :submit
 
   %p.hint.subtle-hint=t('auth.agreement_html', rules_path: about_more_path, terms_path: terms_path)
+.form-footer= render 'auth/shared/links'

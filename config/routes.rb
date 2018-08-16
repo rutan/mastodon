@@ -24,19 +24,16 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     get '/invite/:invite_code', to: 'auth/registrations#new', as: :public_invite
+    match '/auth/finish_signup' => 'auth/confirmations#finish_signup', via: [:get, :patch], as: :finish_signup
   end
 
   devise_for :users, path: 'auth', controllers: {
+    omniauth_callbacks: 'auth/omniauth_callbacks',
+    sessions:           'auth/sessions',
     registrations:      'auth/registrations',
     passwords:          'auth/passwords',
-    omniauth_callbacks: 'auth/omniauth_callbacks'
+    confirmations:      'auth/confirmations',
   }
-
-  namespace :rutans, path: 'auth', as: nil do
-    get 'sign_in' => 'sessions#new', as: :new_user_session
-    get 'sign_in' => 'sessions#new', as: :session
-    delete 'sign_out' => 'sessions#destroy', as: :destroy_user_session
-  end
 
   get '/users/:username', to: redirect('/@%{username}'), constraints: lambda { |req| req.format.nil? || req.format.html? }
 
@@ -61,8 +58,10 @@ Rails.application.routes.draw do
     resources :following, only: [:index], controller: :following_accounts
     resource :follow, only: [:create], controller: :account_follow
     resource :unfollow, only: [:create], controller: :account_unfollow
+
     resource :outbox, only: [:show], module: :activitypub
     resource :inbox, only: [:create], module: :activitypub
+    resources :collections, only: [:show], module: :activitypub
   end
 
   resource :inbox, only: [:create], module: :activitypub
@@ -79,7 +78,7 @@ Rails.application.routes.draw do
     resource :notifications, only: [:show, :update]
     resource :import, only: [:show, :create]
 
-    resource :export, only: [:show]
+    resource :export, only: [:show, :create]
     namespace :exports, constraints: { format: :csv } do
       resources :follows, only: :index, controller: :following_accounts
       resources :blocks, only: :index, controller: :blocked_accounts
@@ -88,8 +87,8 @@ Rails.application.routes.draw do
 
     # resource :two_factor_authentication, only: [:show, :create, :destroy]
     # namespace :two_factor_authentication do
-    #  resources :recovery_codes, only: [:create]
-    #  resource :confirmation, only: [:new, :create]
+    #   resources :recovery_codes, only: [:create]
+    #   resource :confirmation, only: [:new, :create]
     # end
 
     resource :follower_domains, only: [:show, :update]
@@ -106,7 +105,10 @@ Rails.application.routes.draw do
     resources :sessions, only: [:destroy]
   end
 
-  resources :media,  only: [:show]
+  resources :media, only: [:show] do
+    get :player
+  end
+
   resources :tags,   only: [:show]
   resources :emojis, only: [:show]
   resources :invites, only: [:index, :create, :destroy]
@@ -160,7 +162,7 @@ Rails.application.routes.draw do
     end
 
     resources :users, only: [] do
-      resource :two_factor_authentication, only: [:destroy]
+      # resource :two_factor_authentication, only: [:destroy]
     end
 
     resources :custom_emojis, only: [:index, :new, :create, :update, :destroy] do

@@ -8,26 +8,9 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :set_sessions, only: [:edit, :update]
   before_action :set_instance_presenter, only: [:new, :create, :update]
 
-  def new
-    if session['devise.auth_data']
-      super
-    else
-      redirect_to about_path
-    end
-  end
-
   def create
-    ActiveRecord::Base.transaction do
-      super do
-        if resource.id
-          ::Rutans::AuthProvider.create!(
-            name: session['devise.auth_data']['name'],
-            uid: session['devise.auth_data']['uid'],
-            user_id: resource.id
-          )
-          session['devise.auth_data'] = nil
-        end
-      end
+    super do
+      session['devise.google_oauth2_data'] = nil if resource.persisted?
     end
   end
 
@@ -37,16 +20,40 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   protected
 
+  def update_resource(resource, params)
+    params[:password] = nil if Devise.pam_authentication && resource.encrypted_password.blank?
+    super
+  end
+
   def build_resource(hash = nil)
-    super(hash)
-    resource.email = session['devise.auth_data']['email']
-    resource.locale = I18n.locale
-    resource.build_account if resource.account.nil?
+    if hash && session['devise.google_oauth2_data']
+      begin
+        ActiveRecord::Base.transaction do
+          self.resource = User.find_for_oauth(
+            JSON.parse(session['devise.google_oauth2_data'].to_json, object_class: OpenStruct)
+          )
+          resource.password = ''
+          resource.encrypted_password = ''
+          resource.locale = I18n.locale
+          resource.account.username = hash[:account_attributes][:username]
+          resource.account.save!
+        end
+      rescue ActiveRecord::RecordInvalid
+        nil
+      end
+    else
+      super(hash)
+
+      resource.locale      = I18n.locale
+      resource.invite_code = params[:invite_code] if resource.invite_code.blank?
+
+      resource.build_account if resource.account.nil?
+    end
   end
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up) do |u|
-      u.permit(account_attributes: [:username])
+      u.permit({ account_attributes: [:username] }, :invite_code)
     end
   end
 
