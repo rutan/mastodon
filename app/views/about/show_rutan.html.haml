@@ -1,0 +1,40 @@
+- content_for :page_title do
+  = site_hostname
+
+- content_for :header_tags do
+  %link{ rel: 'canonical', href: about_url }/
+  %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
+  = javascript_pack_tag 'about', integrity: true, crossorigin: 'anonymous'
+  = render partial: 'shared/og'
+
+.landing-page-rutan
+  .landing-page-rutan__main-column
+    .landing-page-rutan__back{style: "background-image: url(#{@instance_presenter.hero&.file&.url || @instance_presenter.thumbnail&.file&.url || asset_pack_path('preview.jpg')});"}
+
+    .landing-page-rutan__hero
+      = render 'shared/rutan/mini_logo'
+
+    .landing-page-rutan__forms
+      = render 'forms'
+
+    - if @instance_presenter.contact_account
+      = link_to TagManager.instance.url_for(@instance_presenter.contact_account), class: 'landing-page-rutan__owner' do
+        .landing-page-rutan__owner__avatar
+          .account__avatar{ style: "background-image: url(#{@instance_presenter.contact_account.avatar.url})" }
+        .landing-page-rutan__owner__name
+          %strong.emojify= display_name(@instance_presenter.contact_account, custom_emojify: true)
+          %small @#{@instance_presenter.contact_account.acct}
+
+    .landing-page-rutan__footer
+      .landing-page-rutan__footer__mastodon
+        = 'Mastodon'
+        = link_to t('about.source_code'), @instance_presenter.source_url
+        = " (#{@instance_presenter.version_number})"
+
+      .landing-page-rutan__footer__more
+        = link_to t('about.learn_more'), about_more_path
+
+  .landing-page-rutan__timeline-column
+    #mastodon-timeline{ data: { props: Oj.dump(default_props) } }
+
+#modal-container

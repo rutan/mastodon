@@ -7,6 +7,7 @@ class AboutController < ApplicationController
   def show
     serializable_resource = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
     @initial_state_json   = serializable_resource.to_json
+    render 'about/show_rutan'
   end
 
   def more; end
