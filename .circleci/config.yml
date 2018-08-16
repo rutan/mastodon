@@ -179,7 +179,7 @@ jobs:
       - run: ruby -e 'puts RUBY_VERSION' | tee /tmp/.ruby-version
       - *restore_ruby_dependencies
       - run: bundle exec i18n-tasks check-normalized
-      - run: bundle exec i18n-tasks unused
+      # - run: bundle exec i18n-tasks unused
 
 workflows:
   version: 2
