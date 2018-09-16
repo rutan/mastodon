@@ -7,14 +7,14 @@
       %nav.header
         .nav-left
           = link_to root_url, class: 'brand' do
-            = image_tag asset_pack_path('logo_full.svg'), alt: 'Mastodon'
+            = image_tag asset_pack_path('rutan_logo_full.svg'), alt: instance_presenter.site_title
         .nav-center
         .nav-right
           - if user_signed_in?
             = link_to t('settings.back'), root_url, class: 'nav-link nav-button webapp-btn'
           - else
             = link_to t('auth.login'), new_user_session_path, class: 'webapp-btn nav-link nav-button'
-            = link_to t('auth.register'), open_registrations? ? new_user_registration_path : 'https://joinmastodon.org/#getting-started', class: 'webapp-btn nav-link nav-button'
+            -#= link_to t('auth.register'), open_registrations? ? new_user_registration_path : 'https://joinmastodon.org/#getting-started', class: 'webapp-btn nav-link nav-button'
 
     .container= yield
 
