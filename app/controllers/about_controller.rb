@@ -5,6 +5,10 @@ class AboutController < ApplicationController
   before_action :set_instance_presenter, only: [:show, :more, :terms]
 
   def show
+    if @instance_presenter.contact_account
+      redirect_to short_account_path(@instance_presenter.contact_account)
+      return
+    end
     serializable_resource = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
     @initial_state_json   = serializable_resource.to_json
   end
