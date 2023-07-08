@@ -31,6 +31,8 @@ const messages = defineMessages({
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
 });
 
+const MAX_CHARS = 3000;
+
 export default @injectIntl
 class ComposeForm extends ImmutablePureComponent {
 
@@ -90,7 +92,7 @@ class ComposeForm extends ImmutablePureComponent {
     const fulltext = this.getFulltextForCharacterCounting();
     const isOnlyWhitespace = fulltext.length !== 0 && fulltext.trim().length === 0;
 
-    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 500 || (isOnlyWhitespace && !anyMedia));
+    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > MAX_CHARS || (isOnlyWhitespace && !anyMedia));
   };
 
   handleSubmit = (e) => {
@@ -280,7 +282,7 @@ class ComposeForm extends ImmutablePureComponent {
           </div>
 
           <div className='character-counter__wrapper'>
-            <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
+            <CharacterCounter max={MAX_CHARS} text={this.getFulltextForCharacterCounting()} />
           </div>
         </div>
 
