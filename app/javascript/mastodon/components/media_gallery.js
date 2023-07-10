@@ -330,6 +330,7 @@ class MediaGallery extends React.PureComponent {
     }
 
     const size     = media.take(4).size;
+    const moreSize = media.size - size;
     const uncached = media.every(attachment => attachment.get('type') === 'unknown');
 
     if (standalone && this.isFullSizeEligible()) {
@@ -361,6 +362,12 @@ class MediaGallery extends React.PureComponent {
         </div>
 
         {children}
+
+        {
+          moreSize > 0 ? (
+            <div className={classNames('media-gallery__fd__more')}>+ {moreSize}</div>
+          ) : null
+        }
       </div>
     );
   }
