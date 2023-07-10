@@ -41,6 +41,8 @@ class MediaAttachment < ApplicationRecord
   IMAGE_LIMIT = 10.megabytes
   VIDEO_LIMIT = 40.megabytes
 
+  MAX_UPLOAD_SIZE = ENV.fetch('MEDIA_ATTACHMENT_MAX_UPLOAD_SIZE', 4).to_i
+
   MAX_VIDEO_MATRIX_LIMIT = 2_304_000 # 1920x1200px
   MAX_VIDEO_FRAME_RATE   = 60
 
