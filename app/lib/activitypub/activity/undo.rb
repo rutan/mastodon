@@ -107,6 +107,7 @@ class ActivityPub::Activity::Undo < ActivityPub::Activity
 
     if @account.favourited?(status)
       favourite = status.favourites.where(account: @account).first
+      favourite&.fd_emoji_reaction&.destroy
       favourite&.destroy
     else
       delete_later!(object_uri)
