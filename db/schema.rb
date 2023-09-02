@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_06_114142) do
+ActiveRecord::Schema.define(version: 2022_12_06_114143) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,11 +153,11 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.string "url"
     t.string "avatar_file_name"
     t.string "avatar_content_type"
-    t.integer "avatar_file_size"
+    t.bigint "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string "header_file_name"
     t.string "header_content_type"
-    t.integer "header_file_size"
+    t.bigint "header_file_size"
     t.datetime "header_updated_at"
     t.string "avatar_remote_url"
     t.boolean "locked", default: false, null: false
@@ -181,8 +181,8 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.integer "avatar_storage_schema_version"
     t.integer "header_storage_schema_version"
     t.string "devices_url"
-    t.integer "suspension_origin"
     t.datetime "sensitized_at"
+    t.integer "suspension_origin"
     t.boolean "trendable"
     t.datetime "reviewed_at"
     t.datetime "requested_review_at"
@@ -328,7 +328,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.string "domain"
     t.string "image_file_name"
     t.string "image_content_type"
-    t.integer "image_file_size"
+    t.bigint "image_file_size"
     t.datetime "image_updated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -435,6 +435,16 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.index ["status_id"], name: "index_favourites_on_status_id"
   end
 
+  create_table "fd_emoji_reactions", force: :cascade do |t|
+    t.bigint "favourite_id"
+    t.string "name", null: false
+    t.bigint "custom_emoji_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["custom_emoji_id"], name: "index_fd_emoji_reactions_on_custom_emoji_id"
+    t.index ["favourite_id"], name: "index_fd_emoji_reactions_on_favourite_id", unique: true
+  end
+
   create_table "featured_tags", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "tag_id", null: false
@@ -495,7 +505,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.datetime "updated_at", null: false
     t.string "data_file_name"
     t.string "data_content_type"
-    t.integer "data_file_size"
+    t.bigint "data_file_size"
     t.datetime "data_updated_at"
     t.bigint "account_id", null: false
     t.boolean "overwrite", default: false, null: false
@@ -516,12 +526,12 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
   end
 
   create_table "ip_blocks", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "expires_at"
     t.inet "ip", default: "0.0.0.0", null: false
     t.integer "severity", default: 0, null: false
+    t.datetime "expires_at"
     t.text "comment", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["ip"], name: "index_ip_blocks_on_ip", unique: true
   end
 
@@ -569,7 +579,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.bigint "status_id"
     t.string "file_file_name"
     t.string "file_content_type"
-    t.integer "file_file_size"
+    t.bigint "file_file_size"
     t.datetime "file_updated_at"
     t.string "remote_url", default: "", null: false
     t.datetime "created_at", null: false
@@ -585,7 +595,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.integer "file_storage_schema_version"
     t.string "thumbnail_file_name"
     t.string "thumbnail_content_type"
-    t.integer "thumbnail_file_size"
+    t.bigint "thumbnail_file_size"
     t.datetime "thumbnail_updated_at"
     t.string "thumbnail_remote_url"
     t.index ["account_id", "status_id"], name: "index_media_attachments_on_account_id_and_status_id", order: { status_id: :desc }
@@ -752,7 +762,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.string "description", default: "", null: false
     t.string "image_file_name"
     t.string "image_content_type"
-    t.integer "image_file_size"
+    t.bigint "image_file_size"
     t.datetime "image_updated_at"
     t.integer "type", default: 0, null: false
     t.text "html", default: "", null: false
@@ -863,7 +873,7 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
     t.string "var", default: "", null: false
     t.string "file_file_name"
     t.string "file_content_type"
-    t.integer "file_file_size"
+    t.bigint "file_file_size"
     t.datetime "file_updated_at"
     t.json "meta"
     t.datetime "created_at", null: false
@@ -890,8 +900,8 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
   create_table "status_pins", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "status_id", null: false
-    t.datetime "created_at", default: -> { "now()" }, null: false
-    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id", "status_id"], name: "index_status_pins_on_account_id_and_status_id", unique: true
     t.index ["status_id"], name: "index_status_pins_on_status_id"
   end
@@ -1159,6 +1169,8 @@ ActiveRecord::Schema.define(version: 2022_12_06_114142) do
   add_foreign_key "encrypted_messages", "devices", on_delete: :cascade
   add_foreign_key "favourites", "accounts", name: "fk_5eb6c2b873", on_delete: :cascade
   add_foreign_key "favourites", "statuses", name: "fk_b0e856845e", on_delete: :cascade
+  add_foreign_key "fd_emoji_reactions", "custom_emojis", on_delete: :cascade
+  add_foreign_key "fd_emoji_reactions", "favourites", on_delete: :cascade
   add_foreign_key "featured_tags", "accounts", on_delete: :cascade
   add_foreign_key "featured_tags", "tags", on_delete: :cascade
   add_foreign_key "follow_recommendation_suppressions", "accounts", on_delete: :cascade
