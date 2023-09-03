@@ -12,6 +12,7 @@ import FollowRequestContainer from '../containers/follow_request_container';
 import Icon from 'mastodon/components/icon';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+import emojify from 'mastodon/features/emoji/emoji';
 
 const messages = defineMessages({
   favourite: { id: 'notification.favourite', defaultMessage: '{name} favourited your status' },
@@ -184,12 +185,34 @@ class Notification extends ImmutablePureComponent {
   renderFavourite (notification, link) {
     const { intl, unread } = this.props;
 
+    const reactionEmojified = (() => {
+      const reaction = notification.get('emoji_reaction');
+      if (!reaction) return null;
+
+      const customEmoji = reaction.get('custom_emoji');
+      if (!customEmoji) return emojify(reaction.get('name'));
+
+      const shortCode = `:${reaction.get('name')}:`;
+      return emojify(shortCode, {
+        [shortCode]: customEmoji.toJS(),
+      });
+    })();
+
     return (
       <HotKeys handlers={this.getHandlers()}>
         <div className={classNames('notification notification-favourite focusable', { unread })} tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage(messages.favourite, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
           <div className='notification__message'>
             <div className='notification__favourite-icon-wrapper'>
-              <Icon id='star' className='star-icon' fixedWidth />
+              {
+                reactionEmojified ? (
+                  <span
+                    className='notification__fd-emoji-reaction'
+                    dangerouslySetInnerHTML={{ __html: reactionEmojified }}
+                  />
+                ) : (
+                  <Icon id='star' className='star-icon' fixedWidth />
+                )
+              }
             </div>
 
             <span title={notification.get('created_at')}>

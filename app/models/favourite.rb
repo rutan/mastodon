@@ -20,6 +20,8 @@ class Favourite < ApplicationRecord
 
   has_one :notification, as: :activity, dependent: :destroy
 
+  has_one :fd_emoji_reaction, dependent: :destroy
+
   validates :status_id, uniqueness: { scope: :account_id }
 
   before_validation do

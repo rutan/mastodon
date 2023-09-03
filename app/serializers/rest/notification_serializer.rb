@@ -7,6 +7,8 @@ class REST::NotificationSerializer < ActiveModel::Serializer
   belongs_to :target_status, key: :status, if: :status_type?, serializer: REST::StatusSerializer
   belongs_to :report, if: :report_type?, serializer: REST::ReportSerializer
 
+  has_one :fd_emoji_reaction, key: :emoji_reaction, if: -> { object.type == :favourite }, serializer: REST::FdEmojiReactionSerializer
+
   def id
     object.id.to_s
   end
