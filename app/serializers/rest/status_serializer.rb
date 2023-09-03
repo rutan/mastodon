@@ -2,6 +2,7 @@
 
 class REST::StatusSerializer < ActiveModel::Serializer
   include FormattingHelper
+  include RoutingHelper
 
   attributes :id, :created_at, :in_reply_to_id, :in_reply_to_account_id,
              :sensitive, :spoiler_text, :visibility, :language,
@@ -29,6 +30,9 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   has_one :preview_card, key: :card, serializer: REST::PreviewCardSerializer
   has_one :preloadable_poll, key: :poll, serializer: REST::PollSerializer
+
+  attribute :emoji_reactions
+  attribute :emoji_reactions_count
 
   def id
     object.id.to_s
@@ -142,6 +146,31 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def ordered_mentions
     object.active_mentions.to_a.sort_by(&:id)
+  end
+
+  def emoji_reactions
+    @emoji_reactions ||=
+      {}.tap do |result|
+        object.fd_emoji_reactions.find_each do |reaction|
+          key = "#{reaction.custom_emoji_id}\t#{reaction.name}"
+          result[key] ||= {
+            name: reaction.name,
+            count: 0,
+            url: reaction.custom_emoji ? full_asset_url(reaction.custom_emoji.image.url) : nil,
+            static_url: reaction.custom_emoji ? full_asset_url(reaction.custom_emoji.image.url(:static)) : nil,
+            domain: reaction.custom_emoji&.domain,
+            status_id: id,
+            account_ids: [],
+            me: false, # dummy value
+          }.compact
+          result[key][:count] += 1
+          result[key][:account_ids] << reaction.favourite.account_id
+        end
+      end.values
+  end
+
+  def emoji_reactions_count
+    emoji_reactions.sum { |reaction| reaction[:count] }
   end
 
   class ApplicationSerializer < ActiveModel::Serializer

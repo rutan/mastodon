@@ -44,7 +44,7 @@ class Notification < ApplicationRecord
     status: :status,
     reblog: [status: :reblog],
     mention: [mention: :status],
-    favourite: [favourite: :status],
+    favourite: [favourite: [:status, :fd_emoji_reaction]],
     poll: [poll: :status],
     update: :status,
     'admin.report': [report: :target_account],
@@ -61,6 +61,8 @@ class Notification < ApplicationRecord
   belongs_to :favourite,      foreign_key: 'activity_id', optional: true
   belongs_to :poll,           foreign_key: 'activity_id', optional: true
   belongs_to :report,         foreign_key: 'activity_id', optional: true
+
+  has_one :fd_emoji_reaction, through: :favourite
 
   validates :type, inclusion: { in: TYPES }
 
