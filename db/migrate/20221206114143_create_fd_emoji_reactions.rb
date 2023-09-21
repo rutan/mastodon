@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # for fd.toripota.com
 class CreateFdEmojiReactions < ActiveRecord::Migration[6.1]
   def change
