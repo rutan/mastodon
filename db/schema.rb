@@ -462,6 +462,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
     t.index ["status_id"], name: "index_favourites_on_status_id"
   end
 
+  create_table "fd_emoji_reactions", force: :cascade do |t|
+    t.bigint "favourite_id"
+    t.string "name", null: false
+    t.bigint "custom_emoji_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_emoji_id"], name: "index_fd_emoji_reactions_on_custom_emoji_id"
+    t.index ["favourite_id"], name: "index_fd_emoji_reactions_on_favourite_id", unique: true
+  end
+
   create_table "featured_tags", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "tag_id", null: false
@@ -1206,6 +1216,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_150100) do
   add_foreign_key "encrypted_messages", "devices", on_delete: :cascade
   add_foreign_key "favourites", "accounts", name: "fk_5eb6c2b873", on_delete: :cascade
   add_foreign_key "favourites", "statuses", name: "fk_b0e856845e", on_delete: :cascade
+  add_foreign_key "fd_emoji_reactions", "custom_emojis", on_delete: :cascade
+  add_foreign_key "fd_emoji_reactions", "favourites", on_delete: :cascade
   add_foreign_key "featured_tags", "accounts", on_delete: :cascade
   add_foreign_key "featured_tags", "tags", on_delete: :cascade
   add_foreign_key "follow_recommendation_suppressions", "accounts", on_delete: :cascade
