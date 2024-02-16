@@ -8,7 +8,7 @@ class Api::V1::Statuses::FavouritesController < Api::BaseController
   before_action :set_status, only: [:create]
 
   def create
-    FavouriteService.new.call(current_account, @status)
+    FavouriteService.new.call(current_account, @status, emoji: emoji_for_reaction)
     render json: @status, serializer: REST::StatusSerializer
   end
 
@@ -38,5 +38,18 @@ class Api::V1::Statuses::FavouritesController < Api::BaseController
     authorize @status, :show?
   rescue Mastodon::NotPermittedError
     not_found
+  end
+
+  def emoji_for_reaction
+    emoji_str = params[:emoji].to_s
+
+    if emoji_str.blank?
+      nil
+    elsif emoji_str.match?(/\p{Emoji}/)
+      emoji_str
+    else
+      shortcode, domain = emoji_str.split('@')
+      CustomEmoji.find_by!(shortcode: shortcode, domain: domain)
+    end
   end
 end

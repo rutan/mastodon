@@ -24,6 +24,7 @@ import {
 import {
   reblog,
   favourite,
+  favouriteWithReaction,
   bookmark,
   unreblog,
   unfavourite,
@@ -116,6 +117,14 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
       dispatch(unfavourite(status));
     } else {
       dispatch(favourite(status));
+    }
+  },
+
+  onFavouriteWithReaction (status, emoji) {
+    if (status.get('favourited')) {
+      dispatch(unfavourite(status));
+    } else {
+      dispatch(favouriteWithReaction(status, emoji));
     }
   },
 

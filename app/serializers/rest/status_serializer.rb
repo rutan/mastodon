@@ -174,6 +174,12 @@ class REST::StatusSerializer < ActiveModel::Serializer
           result[key][:count] += 1
           result[key][:account_ids] << reaction.favourite.account_id
         end
+
+        if current_user
+          result.each do |_key, reaction|
+            reaction[:me] = reaction[:account_ids].include?(current_user.account_id)
+          end
+        end
       end.values
   end
 

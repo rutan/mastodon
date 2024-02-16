@@ -8,7 +8,7 @@ class FavouriteService < BaseService
   # @param [Account] account
   # @param [Status] status
   # @return [Favourite]
-  def call(account, status)
+  def call(account, status, emoji: nil)
     authorize_with account, status, :favourite?
 
     favourite = Favourite.find_by(account: account, status: status)
@@ -16,6 +16,17 @@ class FavouriteService < BaseService
     return favourite unless favourite.nil?
 
     favourite = Favourite.create!(account: account, status: status)
+
+    case emoji
+    when String
+      favourite.create_fd_emoji_reaction!(favourite: favourite, name: emoji)
+    when CustomEmoji
+      favourite.create_fd_emoji_reaction!(
+        favourite: favourite,
+        name: emoji.local? ? emoji.shortcode : "#{emoji.shortcode}@#{emoji.domain}",
+        custom_emoji: emoji
+      )
+    end
 
     Trends.statuses.register(status)
 

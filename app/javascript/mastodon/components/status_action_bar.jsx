@@ -8,6 +8,8 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
 
+import EmojiPickerDropdown from "mastodon/features/compose/containers/emoji_picker_dropdown_container";
+import emojify from "mastodon/features/emoji/emoji";
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 
 import DropdownMenuContainer from '../containers/dropdown_menu_container';
@@ -70,6 +72,7 @@ class StatusActionBar extends ImmutablePureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onFavouriteWithReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -125,6 +128,16 @@ class StatusActionBar extends ImmutablePureComponent {
 
     if (signedIn) {
       this.props.onFavourite(this.props.status);
+    } else {
+      this.props.onInteractionModal('favourite', this.props.status);
+    }
+  };
+
+  handleFavouriteWithReactionClick = (emoji) => {
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      this.props.onFavouriteWithReaction(this.props.status, emoji.custom ? emoji.id : emoji.native);
     } else {
       this.props.onInteractionModal('favourite', this.props.status);
     }
@@ -360,11 +373,27 @@ class StatusActionBar extends ImmutablePureComponent {
       <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.hide)} icon='eye' onClick={this.handleHideClick} />
     );
 
+    const myReaction = status.get('favourited') && status.get('emoji_reactions').find((item) => item.get('me'));
+
     return (
       <div className='status__action-bar'>
         <IconButton className='status__action-bar__button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} />
         <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} />
         <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
+        {
+          myReaction ? (
+            myReaction.get('url') ? (
+              <img className='status__action-bar__fd-emoji-reaction' src={myReaction.get('url')} alt={myReaction.get('name')} />
+            ) : <span className='status__action-bar__fd-emoji-reaction' dangerouslySetInnerHTML={{__html: emojify(myReaction.get('name'))}} />
+          ) : (
+            <EmojiPickerDropdown
+              onPickEmoji={this.handleFavouriteWithReactionClick}
+              button={
+                <IconButton className='status__action-bar__button reaction-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='smile-o' />
+              }
+            />
+          )
+        }
         <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
 
         {filterButton}

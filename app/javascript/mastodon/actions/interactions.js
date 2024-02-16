@@ -155,6 +155,19 @@ export function unfavourite(status) {
   };
 }
 
+export function favouriteWithReaction(status, emoji) {
+  return function (dispatch, getState) {
+    dispatch(favouriteRequest(status));
+
+    api(getState).put(`/api/v1/statuses/${status.get('id')}/emoji_reactions/${emoji}`).then(function (response) {
+      dispatch(importFetchedStatus(response.data));
+      dispatch(favouriteSuccess(status));
+    }).catch(function (error) {
+      dispatch(favouriteFail(status, error));
+    });
+  };
+}
+
 export function favouriteRequest(status) {
   return {
     type: FAVOURITE_REQUEST,

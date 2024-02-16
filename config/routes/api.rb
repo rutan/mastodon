@@ -16,6 +16,8 @@ namespace :api, format: false do
         resource :favourite, only: :create
         post :unfavourite, to: 'favourites#destroy'
 
+        put '/emoji_reactions/:emoji', to: 'favourites#create'
+
         resource :bookmark, only: :create
         post :unbookmark, to: 'bookmarks#destroy'
 
